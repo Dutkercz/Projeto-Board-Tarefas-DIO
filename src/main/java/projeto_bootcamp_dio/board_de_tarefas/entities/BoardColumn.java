@@ -1,6 +1,7 @@
 package projeto_bootcamp_dio.board_de_tarefas.entities;
 
 import jakarta.persistence.*;
+import projeto_bootcamp_dio.board_de_tarefas.enums.BoardColumnEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ public class BoardColumn {
     private Long id;
 
     private String name;
-    private String kind;
+    private BoardColumnEnum kind;
     private Integer order;
 
     @ManyToOne
@@ -26,7 +27,7 @@ public class BoardColumn {
     public BoardColumn() {
     }
 
-    public BoardColumn(Long id, String name, String kind, Integer order, Board board) {
+    public BoardColumn(Long id, String name, BoardColumnEnum kind, Integer order, Board board) {
         this.id = id;
         this.name = name;
         this.kind = kind;
@@ -50,11 +51,11 @@ public class BoardColumn {
         this.name = name;
     }
 
-    public String getKind() {
+    public BoardColumnEnum getKind() {
         return kind;
     }
 
-    public void setKind(String kind) {
+    public void setKind(BoardColumnEnum kind) {
         this.kind = kind;
     }
 
