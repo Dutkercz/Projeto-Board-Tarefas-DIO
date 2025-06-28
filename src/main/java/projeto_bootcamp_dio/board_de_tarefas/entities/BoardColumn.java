@@ -15,7 +15,11 @@ public class BoardColumn {
     private Long id;
 
     private String name;
+
+    @Enumerated(EnumType.STRING)
     private BoardColumnEnum kind;
+
+    @Column(name = "_order")
     private Integer order;
 
     @ManyToOne
