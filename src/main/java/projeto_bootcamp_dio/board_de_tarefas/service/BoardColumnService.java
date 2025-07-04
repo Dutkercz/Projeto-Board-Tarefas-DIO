@@ -6,13 +6,10 @@ import projeto_bootcamp_dio.board_de_tarefas.entities.BoardColumn;
 import projeto_bootcamp_dio.board_de_tarefas.enums.BoardColumnEnum;
 import projeto_bootcamp_dio.board_de_tarefas.repositories.BoardColumnRepository;
 
-import java.util.Scanner;
-
 @Service
 public class BoardColumnService {
 
     private final BoardColumnRepository boardColumnRepository;
-    private final Scanner scanner = new Scanner(System.in);
 
     public BoardColumnService(BoardColumnRepository boardColumnRepository) {
         this.boardColumnRepository = boardColumnRepository;

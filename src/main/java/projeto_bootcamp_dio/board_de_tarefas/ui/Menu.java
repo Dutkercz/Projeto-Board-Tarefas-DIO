@@ -3,12 +3,10 @@ package projeto_bootcamp_dio.board_de_tarefas.ui;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Component;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Board;
-import projeto_bootcamp_dio.board_de_tarefas.entities.BoardColumn;
-import projeto_bootcamp_dio.board_de_tarefas.enums.BoardColumnEnum;
 import projeto_bootcamp_dio.board_de_tarefas.service.BoardColumnService;
 import projeto_bootcamp_dio.board_de_tarefas.service.BoardService;
 
-import javax.swing.text.html.parser.Entity;
+import java.util.List;
 import java.util.Scanner;
 
 @Component
@@ -36,7 +34,8 @@ public class Menu {
                     1 - CRIAR NOVO BOARD / CREATE NEW BOARD
                     2 - SELECIONAR BOARD / SELECT BOARD
                     3 - EXCLUIR BOARD / DELETE BOARD
-                    4 - SAIR
+                    4 - LISTAR TODOS OS BOARDS / SHOW ALL BOARDS
+                    5 - SAIR
                     >>>\s""";
 
             System.out.print(options);
@@ -87,13 +86,21 @@ public class Menu {
                     break;
 
                 case 4:
+                    System.out.println("Lista de Disponíveis");
+                    List<Board> boardList = boardService.boardList();
+                    boardList.forEach(x -> {
+                        System.out.println("ID " + x.getId() + " - " + x.getName());
+                    });
+                    break;
+
+                case 5:
                     System.out.println("Saindo...");
                     break;
                 default:
                     System.out.println("Opção inválida, tente novamente.");
                     break;
             }
-        }while (select != 4);
+        }while (select != 5);
 
         scanner.close();
     }
