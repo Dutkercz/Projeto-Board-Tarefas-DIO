@@ -15,11 +15,11 @@ import java.util.Scanner;
 public class Menu {
 
     private final BoardService boardService;
-    private final BoardColumnService boardColumnService;
+    private final BoardUI boardUI;
 
-    public Menu(BoardService boardService, BoardColumnService boardColumnService) {
+    public Menu(BoardService boardService, BoardColumnService boardColumnService, BoardUI boardUI) {
         this.boardService = boardService;
-        this.boardColumnService = boardColumnService;
+        this.boardUI = boardUI;
     }
 
     public  void showMenu(){
@@ -45,7 +45,8 @@ public class Menu {
             switch (select) {
                 case 1:
                     scanner.nextLine();
-                    board = boardService.insert(board);
+                    board = boardUI.boardInteraction();
+
                     System.out.printf(firula +"Board criado!\n  nome: %s, com o ID %s", board.getName(), board.getId() + firula);
                     break;
 
