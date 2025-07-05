@@ -15,10 +15,6 @@ public class BoardColumnService {
         this.boardColumnRepository = boardColumnRepository;
     }
 
-    public void save(BoardColumn boardColumn){
-        boardColumnRepository.save(boardColumn);
-    }
-
     public BoardColumn createBoardColumn(String boardColumnName, BoardColumnEnum kind, int order, Board board) {
         return boardColumnRepository.save(new BoardColumn(null, boardColumnName, kind, order, board));
     }

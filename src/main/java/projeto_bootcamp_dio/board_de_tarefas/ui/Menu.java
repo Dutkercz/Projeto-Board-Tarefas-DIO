@@ -15,7 +15,7 @@ public class Menu {
     private final BoardService boardService;
     private final BoardUI boardUI;
 
-    public Menu(BoardService boardService, BoardColumnService boardColumnService, BoardUI boardUI) {
+    public Menu(BoardService boardService, BoardUI boardUI) {
         this.boardService = boardService;
         this.boardUI = boardUI;
     }
@@ -24,7 +24,7 @@ public class Menu {
         Scanner scanner = new Scanner(System.in);
 
         String firula = "\n===================================================================\n";
-        Board board = new Board();
+        Board board;
         int select;
 
         do {
@@ -40,10 +40,10 @@ public class Menu {
 
             System.out.print(options);
             select = scanner.nextInt();
+            scanner.nextLine();
 
             switch (select) {
                 case 1:
-                    scanner.nextLine();
                     board = boardUI.boardInteraction();
 
                     System.out.printf(firula +"Board criado!\n  nome: %s, com o ID %s", board.getName(), board.getId() + firula);
@@ -86,7 +86,7 @@ public class Menu {
                     break;
 
                 case 4:
-                    System.out.println("Lista de Disponíveis");
+                    System.out.println("Lista de BOARDS Disponíveis");
                     List<Board> boardList = boardService.boardList();
                     boardList.forEach(x -> {
                         System.out.println("ID " + x.getId() + " - " + x.getName());
@@ -94,7 +94,7 @@ public class Menu {
                     break;
 
                 case 5:
-                    System.out.println("Saindo...");
+                    System.out.println("Saindo... ");
                     break;
                 default:
                     System.out.println("Opção inválida, tente novamente.");
