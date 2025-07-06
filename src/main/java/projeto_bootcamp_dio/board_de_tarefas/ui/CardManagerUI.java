@@ -1,9 +1,14 @@
 package projeto_bootcamp_dio.board_de_tarefas.ui;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Component;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Board;
+import projeto_bootcamp_dio.board_de_tarefas.entities.BoardColumn;
+import projeto_bootcamp_dio.board_de_tarefas.entities.Card;
+import projeto_bootcamp_dio.board_de_tarefas.service.BoardColumnService;
 import projeto_bootcamp_dio.board_de_tarefas.service.CardService;
 
+import java.util.List;
 import java.util.Scanner;
 
 @Component
@@ -11,10 +16,13 @@ public class CardManagerUI {
 
     private final Scanner scanner = new Scanner(System.in);
     private final CardService cardService;
+    private final BoardColumnService boardColumnService;
     private Board board;
+    private BoardColumn boardColumn;
 
-    public CardManagerUI(CardService cardService) {
+    public CardManagerUI(CardService cardService, BoardColumnService boardColumnService) {
         this.cardService = cardService;
+        this.boardColumnService = boardColumnService;
     }
 
     public void setBoard(Board board) {
@@ -92,10 +100,43 @@ public class CardManagerUI {
     }
 
     private void showColumnWithCard() {
+        System.out.printf("Escolha uma coluna do Board %s %n" , board.getName());
+        List<Long> columnsIds = board.getBoardColumnList().stream().map(BoardColumn::getId).toList();
+        long selectedColumnID = -1L;
+
+        while (!columnsIds.contains(selectedColumnID)) {//roda até encontrar um ID que esteja na listade columnsIds
+            board.getBoardColumnList().forEach(x ->
+                    System.out.printf("%s - %s [%s] %n", x.getId(), x.getName(), x.getKind()));
+            selectedColumnID = scanner.nextLong();
+        }
+        try {
+            boardColumn = boardColumnService.findById(selectedColumnID);
+            System.out.printf("Coluna %s - Tipo %s %n", boardColumn.getName(), boardColumn.getKind());
+            boardColumn.getCardList().forEach(x ->
+                    System.out.printf("Card %s - %s.\nDescrição %s", x.getId(), x.getTitle(), x.getDescription()));
+
+        }catch (EntityNotFoundException e){
+            System.out.println(e.getMessage());
+        }
 
     }
 
     private void showCard() {
+        List<Card> cardsList = cardService.findAllByBoardColumnId(boardColumn.getId());
+        long selectedCardId;
+        Card card;
+        if (!cardsList.isEmpty()){
+            do{
+                System.out.println("Esolha um card da lista ");
+                cardsList.forEach(x ->
+                        System.out.printf("Card ID %s - Titulo: %s %n", x.getId(), x.getTitle()));
+                selectedCardId = scanner.nextLong();
+                card = cardService.findById(selectedCardId);
+            }while (card.getId() == null);
+
+        }else {
+            System.out.printf("Não há Cards na coluna %s [tipo - %s]%n", boardColumn.getName(), boardColumn.getKind());
+        }
 
     }
 

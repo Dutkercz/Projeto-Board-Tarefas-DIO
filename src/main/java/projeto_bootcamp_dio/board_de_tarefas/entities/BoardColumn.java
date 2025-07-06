@@ -25,7 +25,7 @@ public class BoardColumn {
     @ManyToOne
     private Board board;
 
-    @OneToMany(mappedBy = "boardColumn")
+    @OneToMany(mappedBy = "boardColumn", fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Card> cardList = new ArrayList<>();
 
     public BoardColumn() {

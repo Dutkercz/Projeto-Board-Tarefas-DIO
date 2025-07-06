@@ -1,5 +1,6 @@
 package projeto_bootcamp_dio.board_de_tarefas.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Board;
 import projeto_bootcamp_dio.board_de_tarefas.entities.BoardColumn;
@@ -17,5 +18,10 @@ public class BoardColumnService {
 
     public BoardColumn createBoardColumn(String boardColumnName, BoardColumnEnum kind, int order, Board board) {
         return boardColumnRepository.save(new BoardColumn(null, boardColumnName, kind, order, board));
+    }
+
+    public BoardColumn findById(long selectedColumn) {
+        return boardColumnRepository.findById(selectedColumn).orElseThrow(() ->
+                new EntityNotFoundException("!!! Coluna de id " + selectedColumn + " não encontrada !!!"));
     }
 }
