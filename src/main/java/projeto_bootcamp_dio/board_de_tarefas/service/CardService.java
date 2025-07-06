@@ -11,4 +11,8 @@ public class CardService {
     public CardService(CardRepository cardRepository) {
         this.cardRepository = cardRepository;
     }
+
+    public int countCardByColumn(Long id) {
+        return cardRepository.countByBoardColumnId(id);
+    }
 }

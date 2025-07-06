@@ -14,7 +14,7 @@ public class Board {
 
     private String name;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<BoardColumn> boardColumnList = new ArrayList<>();
 
     public Board() {
@@ -41,17 +41,17 @@ public class Board {
         this.name = name;
     }
 
-    public void addBoardColumn(BoardColumn boardColumn){
+    public void addBoardColumn(BoardColumn boardColumn) {
         boardColumnList.add(boardColumn);
         boardColumn.setBoard(this);
     }
 
-    public void removeBoardColumn(BoardColumn boardColumn){
+    public void removeBoardColumn(BoardColumn boardColumn) {
         boardColumnList.remove(boardColumn);
         boardColumn.setBoard(null);
     }
 
-    public List<BoardColumn> getBoardColumnList(){
+    public List<BoardColumn> getBoardColumnList() {
         return this.boardColumnList;
     }
 

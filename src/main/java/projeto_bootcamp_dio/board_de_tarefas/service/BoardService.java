@@ -16,19 +16,18 @@ public class BoardService {
     private final Scanner scanner = new Scanner(System.in);
 
 
-
     public BoardService(BoardRepository boardRepository) {
         this.boardRepository = boardRepository;
     }
 
     @Transactional
-    public Board insert(Board board){
+    public Board insert(Board board) {
         return boardRepository.save(board);
     }
 
     public Board findBoard(Long boardID) {
         return boardRepository.findById(boardID)
-                .orElseThrow(() -> new EntityNotFoundException("Board com o id " + boardID + " não encontrado."));
+                .orElseThrow(() -> new EntityNotFoundException("\n!!! Board com o id " + boardID + " não encontrado !!!"));
     }
 
     public void deleteBoard(long boardId) {

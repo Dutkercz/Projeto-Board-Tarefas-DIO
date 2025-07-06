@@ -79,17 +79,17 @@ public class BoardColumn {
         this.board = board;
     }
 
-    public void addCard (Card card){
+    public void addCard(Card card) {
         cardList.add(card);
         card.setBoardColumn(this);
     }
 
-    public void removeCard(Card card){
+    public void removeCard(Card card) {
         cardList.remove(card);
         card.setBoardColumn(this);
     }
 
-    public List<Card> getCardList(){
+    public List<Card> getCardList() {
         return this.cardList;
     }
 

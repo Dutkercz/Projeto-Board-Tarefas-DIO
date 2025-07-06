@@ -1,5 +1,6 @@
 package projeto_bootcamp_dio.board_de_tarefas.ui;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Component;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Board;
 import projeto_bootcamp_dio.board_de_tarefas.entities.BoardColumn;
@@ -12,19 +13,21 @@ import java.util.List;
 import java.util.Scanner;
 
 @Component
-public class BoardUI {
+public class BoardManagerUI {
 
     private final BoardService boardService;
     private final BoardColumnService boardColumnService;
+    private final CardManagerUI cardManagerUI;
     private final Scanner scanner = new Scanner(System.in);
 
-    public BoardUI(BoardService boardService, BoardColumnService boardColumnService) {
+    public BoardManagerUI(BoardService boardService, BoardColumnService boardColumnService, CardManagerUI cardManagerUI) {
         this.boardService = boardService;
         this.boardColumnService = boardColumnService;
+        this.cardManagerUI = cardManagerUI;
     }
 
 
-    public Board boardInteraction(){
+    public void createBoard() {
 
         Board board = new Board();
         System.out.println("CRIAR BOARD");
@@ -51,9 +54,9 @@ public class BoardUI {
         boardColumnList.add(boardColumnService.createBoardColumn(
                 initialColumnName, BoardColumnEnum.INITIAL, 0, board));
 
-        if (additionalColumns > 0){
+        if (additionalColumns > 0) {
             for (int i = 1; i <= additionalColumns; i++) {
-                System.out.print("Digite o nome da COLUNA ADICIONAL nº" + i +": ");
+                System.out.print("Digite o nome da COLUNA ADICIONAL nº" + i + ": ");
                 String boardColumnName = scanner.nextLine();
 
                 try {
@@ -68,18 +71,70 @@ public class BoardUI {
 
         System.out.print("Digite o nome da COLUNA final: ");
         boardColumnList.add(boardColumnService.createBoardColumn(
-                scanner.nextLine(), BoardColumnEnum.FINAL, additionalColumns+1, board ));
+                scanner.nextLine(), BoardColumnEnum.FINAL, additionalColumns + 1, board));
 
         System.out.print("Digite o nome da COLUNA de cancelamento: ");
         boardColumnList.add(boardColumnService.createBoardColumn(
-                scanner.nextLine(), BoardColumnEnum.CANCEL, additionalColumns+2, board ));
+                scanner.nextLine(), BoardColumnEnum.CANCEL, additionalColumns + 2, board));
 
 
-        for (BoardColumn col : boardColumnList){
+        for (BoardColumn col : boardColumnList) {
             board.addBoardColumn(col);
         }
+        System.out.printf("\nBoard criado!\n  nome: %s, com o ID %s\n", board.getName(), board.getId());
 
-        return boardService.insert(board);
+
+        boardService.insert(board);
     }
 
+    public void selectBoard() {
+        Board board;
+        System.out.println("Informe o ID do Board que deseja selecionar");
+        Long boardID = scanner.nextLong();
+        try {
+            board = boardService.findBoard(boardID);
+            cardManagerUI.setBoard(board);
+            cardManagerUI.manageCards();
+
+        } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    public void boardList() {
+        System.out.println("Lista de BOARDS Disponíveis");
+        List<Board> boardList = boardService.boardList();
+        boardList.forEach(x -> {
+            System.out.println("ID " + x.getId() + " - " + x.getName());
+        });
+    }
+
+    public void deleteBoard() {
+        System.out.print("\nDigite o ID do board que deseja deletar: ");
+        long boardId = scanner.nextLong();
+        Board board;
+
+
+        try {
+            board = boardService.findBoard(boardId);
+        } catch (EntityNotFoundException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        scanner.nextLine();
+        System.out.printf("""
+                \nDeseja deletar o BOARD: %s ?
+                1 - Sim
+                Ou aperte qualquer tecla para CANCELAR
+                >>\s""", board.getName());
+        String escolha = scanner.nextLine();
+        if (escolha.equals("1")) {
+            boardService.deleteBoard(boardId);
+            System.out.print("\t\n XXX Board excluido! XXX\n");
+        } else {
+            System.out.println("\nOperação CANCELADA!\n");
+        }
+    }
 }
