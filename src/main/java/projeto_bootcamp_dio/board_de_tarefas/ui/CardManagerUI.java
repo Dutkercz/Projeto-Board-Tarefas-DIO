@@ -2,12 +2,13 @@ package projeto_bootcamp_dio.board_de_tarefas.ui;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Component;
-import projeto_bootcamp_dio.board_de_tarefas.entities.Block;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Board;
 import projeto_bootcamp_dio.board_de_tarefas.entities.BoardColumn;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Card;
+import projeto_bootcamp_dio.board_de_tarefas.enums.BoardColumnEnum;
 import projeto_bootcamp_dio.board_de_tarefas.service.BlockService;
 import projeto_bootcamp_dio.board_de_tarefas.service.BoardColumnService;
+import projeto_bootcamp_dio.board_de_tarefas.service.BoardService;
 import projeto_bootcamp_dio.board_de_tarefas.service.CardService;
 
 import java.time.LocalDateTime;
@@ -20,14 +21,16 @@ public class CardManagerUI {
     private final Scanner scanner = new Scanner(System.in);
     private final BlockService blockService;
     private final CardService cardService;
+    private final BoardService boardService;
     private final BoardColumnService boardColumnService;
     private Board board;
     private BoardColumn boardColumn;
 
 
-    public CardManagerUI(BlockService blockService, CardService cardService, BoardColumnService boardColumnService) {
+    public CardManagerUI(BlockService blockService, CardService cardService, BoardService boardService, BoardColumnService boardColumnService) {
         this.blockService = blockService;
         this.cardService = cardService;
+        this.boardService = boardService;
         this.boardColumnService = boardColumnService;
     }
 
@@ -102,9 +105,13 @@ public class CardManagerUI {
         if (card != null){
             BoardColumn column = boardColumnService.findById(card.getBoardColumn().getId()+1);
             card.setBoardColumn(column);
-            cardService.save(card);
-
-            System.out.printf("Card %s movido para a COLUNA: %s%n",card.getTitle(), card.getBoardColumn().getName());
+            if (column.getKind() == BoardColumnEnum.CANCEL){
+                System.out.println("Esse card já está finalizado.");
+                return;
+            }else {
+                cardService.save(card);
+                System.out.printf("Card %s movido para a COLUNA: %s%n",card.getTitle(), card.getBoardColumn().getName());
+            }
         }
 
     }
@@ -131,6 +138,7 @@ public class CardManagerUI {
     }
 
     private void showColumnWithCard() {
+        board = boardService.findBoard(board.getId());
         System.out.printf("Escolha uma coluna do Board %s %n" , board.getName());
         List<Long> columnsIds = board.getBoardColumnList().stream().map(BoardColumn::getId).toList();
         long selectedColumnID = -1L;
