@@ -69,11 +69,11 @@ public class BoardManagerUI {
             }
         }
 
-        System.out.print("Digite o nome da COLUNA final: ");
+        System.out.print("Digite o nome da COLUNA FINAL: ");
         boardColumnList.add(boardColumnService.createBoardColumn(
                 scanner.nextLine(), BoardColumnEnum.FINAL, additionalColumns + 1, board));
 
-        System.out.print("Digite o nome da COLUNA de cancelamento: ");
+        System.out.print("Digite o nome da COLUNA de CANCELAMENTO: ");
         boardColumnList.add(boardColumnService.createBoardColumn(
                 scanner.nextLine(), BoardColumnEnum.CANCEL, additionalColumns + 2, board));
 
@@ -97,6 +97,7 @@ public class BoardManagerUI {
             cardManagerUI.manageCards();
 
         } catch (EntityNotFoundException e) {
+            scanner.nextLine();
             System.out.println(e.getMessage());
         }
 

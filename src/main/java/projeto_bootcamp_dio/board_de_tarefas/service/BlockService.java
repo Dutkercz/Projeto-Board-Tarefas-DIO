@@ -11,4 +11,8 @@ public class BlockService {
     public BlockService(BlockRepository blockRepository) {
         this.blockRepository = blockRepository;
     }
+
+    public int countTotalBlocks(Long id) {
+        return blockRepository.countByCardId(id);
+    }
 }

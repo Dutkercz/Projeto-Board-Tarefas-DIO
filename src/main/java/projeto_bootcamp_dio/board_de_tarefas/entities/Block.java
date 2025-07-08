@@ -10,10 +10,10 @@ public class Block {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String blockCause;
-    private LocalDateTime blockIn;
-    private String unblockCause;
-    private LocalDateTime unblockIn;
+    private LocalDateTime blockedAt;
+    private String blockReason;
+    private LocalDateTime unblockAt;
+    private String unblockReason;
 
     @ManyToOne
     private Card card;
@@ -21,13 +21,13 @@ public class Block {
     public Block() {
     }
 
-    public Block(Long id, String blockCause, LocalDateTime blockIn,
-                 String unblockCause, LocalDateTime unblockIn, Card card) {
+    public Block(Long id, String blockReason, LocalDateTime blockedAt,
+                 String unblockReason, LocalDateTime unblockAt, Card card) {
         this.id = id;
-        this.blockCause = blockCause;
-        this.blockIn = blockIn;
-        this.unblockCause = unblockCause;
-        this.unblockIn = unblockIn;
+        this.blockReason = blockReason;
+        this.blockedAt = blockedAt;
+        this.unblockReason = unblockReason;
+        this.unblockAt = unblockAt;
         this.card = card;
     }
 
@@ -35,36 +35,36 @@ public class Block {
         return id;
     }
 
-    public String getBlockCause() {
-        return blockCause;
+    public String getBlockReason() {
+        return blockReason;
     }
 
-    public void setBlockCause(String blockCause) {
-        this.blockCause = blockCause;
+    public void setBlockReason(String blockReason) {
+        this.blockReason = blockReason;
     }
 
-    public LocalDateTime getBlockIn() {
-        return blockIn;
+    public LocalDateTime getBlockedAt() {
+        return blockedAt;
     }
 
-    public void setBlockIn(LocalDateTime blockIn) {
-        this.blockIn = blockIn;
+    public void setBlockedAt(LocalDateTime blockedAt) {
+        this.blockedAt = blockedAt;
     }
 
-    public String getUnblockCause() {
-        return unblockCause;
+    public String getUnblockReason() {
+        return unblockReason;
     }
 
-    public void setUnblockCause(String unblockCause) {
-        this.unblockCause = unblockCause;
+    public void setUnblockReason(String unblockReason) {
+        this.unblockReason = unblockReason;
     }
 
-    public LocalDateTime getUnblockIn() {
-        return unblockIn;
+    public LocalDateTime getUnblockAt() {
+        return unblockAt;
     }
 
-    public void setUnblockIn(LocalDateTime unblockIn) {
-        this.unblockIn = unblockIn;
+    public void setUnblockAt(LocalDateTime unblockAt) {
+        this.unblockAt = unblockAt;
     }
 
     public Card getCard() {

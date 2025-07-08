@@ -23,10 +23,10 @@ CREATE TABLE card (
 
 CREATE TABLE block(
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    block_cause VARCHAR(255) NOT NULL,
-    block_in DATE,
-    unblock_cause VARCHAR(255) NOT NULL,
-    un_block DATE,
+    blocked_at DATE NOT NULL,
+    block_reason VARCHAR(255) NOT NULL,
+    unblock_at DATE,
+    unblock_reason VARCHAR(255),
     card_id BIGINT NOT NULL,
 
     CONSTRAINT fk_block__card

@@ -19,7 +19,7 @@ public class Card {
     @ManyToOne
     private BoardColumn boardColumn;
 
-    @OneToMany(mappedBy = "card")
+    @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Block> blockList;
 
     public Card() {

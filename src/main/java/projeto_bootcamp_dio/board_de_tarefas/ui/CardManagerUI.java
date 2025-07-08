@@ -2,12 +2,15 @@ package projeto_bootcamp_dio.board_de_tarefas.ui;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Component;
+import projeto_bootcamp_dio.board_de_tarefas.entities.Block;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Board;
 import projeto_bootcamp_dio.board_de_tarefas.entities.BoardColumn;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Card;
+import projeto_bootcamp_dio.board_de_tarefas.service.BlockService;
 import projeto_bootcamp_dio.board_de_tarefas.service.BoardColumnService;
 import projeto_bootcamp_dio.board_de_tarefas.service.CardService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 
@@ -15,12 +18,15 @@ import java.util.Scanner;
 public class CardManagerUI {
 
     private final Scanner scanner = new Scanner(System.in);
+    private final BlockService blockService;
     private final CardService cardService;
     private final BoardColumnService boardColumnService;
     private Board board;
     private BoardColumn boardColumn;
 
-    public CardManagerUI(CardService cardService, BoardColumnService boardColumnService) {
+
+    public CardManagerUI(BlockService blockService, CardService cardService, BoardColumnService boardColumnService) {
+        this.blockService = blockService;
         this.cardService = cardService;
         this.boardColumnService = boardColumnService;
     }
@@ -51,6 +57,7 @@ public class CardManagerUI {
         do {
             System.out.print(menu);
             option = scanner.nextInt();
+            scanner.nextLine();
 
             switch (option) {
                 case 1 -> createCard();
@@ -72,6 +79,20 @@ public class CardManagerUI {
     }
 
     private void createCard() {
+        Card card = new Card();
+        System.out.print("Informe o titulo do CARD: ");
+        card.setTitle(scanner.nextLine());
+        System.out.print("Informa e Descrição do CARD: ");
+        card.setDescription(scanner.nextLine());
+        card.setBoardColumn(board.getInitialBoardColumn());
+        card.setCreatedAt(LocalDateTime.now());
+        card.setId(null);
+
+        try {
+            cardService.save(card);
+        }catch (RuntimeException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     private void moveCardToNextColumn() {
@@ -105,15 +126,23 @@ public class CardManagerUI {
         long selectedColumnID = -1L;
 
         while (!columnsIds.contains(selectedColumnID)) {//roda até encontrar um ID que esteja na listade columnsIds
-            board.getBoardColumnList().forEach(x ->
-                    System.out.printf("%s - %s [%s] %n", x.getId(), x.getName(), x.getKind()));
+            board.getBoardColumnList().forEach(x -> {
+                    System.out.printf("%s - %s [%s] %n", x.getId(), x.getName(), x.getKind());
+                    if (!x.getCardList().isEmpty()){
+                        for (int i = 0; i < x.getCardList().size(); i++) {
+                            System.out.printf(" Card ID %s - %s " ,x.getCardList().get(i).getId(),
+                                    x.getCardList().get(i).getDescription());
+                        }
+                        System.out.println();
+                    }
+            });
             selectedColumnID = scanner.nextLong();
         }
         try {
             boardColumn = boardColumnService.findById(selectedColumnID);
             System.out.printf("Coluna %s - Tipo %s %n", boardColumn.getName(), boardColumn.getKind());
             boardColumn.getCardList().forEach(x ->
-                    System.out.printf("Card %s - %s.\nDescrição %s", x.getId(), x.getTitle(), x.getDescription()));
+                    System.out.printf("Card %s - %s.\nDescrição: %s%n", x.getId(), x.getTitle(), x.getDescription()));
 
         }catch (EntityNotFoundException e){
             System.out.println(e.getMessage());
@@ -122,22 +151,49 @@ public class CardManagerUI {
     }
 
     private void showCard() {
-        List<Card> cardsList = cardService.findAllByBoardColumnId(boardColumn.getId());
-        long selectedCardId;
-        Card card;
-        if (!cardsList.isEmpty()){
-            do{
-                System.out.println("Esolha um card da lista ");
-                cardsList.forEach(x ->
-                        System.out.printf("Card ID %s - Titulo: %s %n", x.getId(), x.getTitle()));
-                selectedCardId = scanner.nextLong();
-                card = cardService.findById(selectedCardId);
-            }while (card.getId() == null);
-
-        }else {
-            System.out.printf("Não há Cards na coluna %s [tipo - %s]%n", boardColumn.getName(), boardColumn.getKind());
+        if (boardColumn == null) {
+            System.out.println("!!! Selecione uma Coluna na opção 7 !!!");
+            return;
         }
+        List<Card> cardsList = cardService.findAllByBoardColumnId(boardColumn.getId());
 
+        if (cardsList.isEmpty()) {
+            System.out.printf("Não há Cards na coluna %s [tipo - %s]%n",
+                    boardColumn.getName(), boardColumn.getKind());
+        }else {
+            Card card = new Card();
+            List<Long> cardListIds = cardsList.stream().map(Card::getId).toList();
+            long selectedCardId = -1L;
+
+            while (!cardListIds.contains(selectedCardId)) {
+                System.out.println("Escolha um card da lista:");
+                cardsList.forEach(x -> System.out.printf("Card ID - %s%n", x.getId()));
+                System.out.print(">> ");
+                try {
+                    String input = scanner.next();
+                    selectedCardId = Long.parseLong(input);
+
+                    card = cardService.findById(selectedCardId);
+
+                } catch (EntityNotFoundException e) {
+                    System.out.println(e.getMessage());
+                } catch (NumberFormatException e) {
+                    System.out.println("Entrada inválida. Digite um número válido.");
+                    scanner.nextLine();
+                }
+            }
+            System.out.printf("Card ID %s - Título: %s%n", card.getId(), card.getTitle());
+
+            System.out.println(card.getBlockList() != null && !card.getBlockList().isEmpty()
+                    ? "Está bloqueado: " + card.getBlockList().getLast().getBlockReason()
+                    : "Não está bloqueado.");
+
+            System.out.printf("Atualmente na coluna %s - %s%n",
+                    card.getBoardColumn().getId(), card.getBoardColumn().getName());
+
+            System.out.printf("Número total de bloqueios: %s%n",
+                    blockService.countTotalBlocks(card.getId()));
+        }
     }
 
 }

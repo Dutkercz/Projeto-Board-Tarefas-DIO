@@ -28,4 +28,8 @@ public class CardService {
     public List<Card> findAllByBoardColumnId(long selectedColumn) {
         return cardRepository.findAllByBoardColumnId(selectedColumn);
     }
+
+    public void save(Card card) {
+        cardRepository.save(card);
+    }
 }

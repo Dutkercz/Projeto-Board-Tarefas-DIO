@@ -1,6 +1,7 @@
 package projeto_bootcamp_dio.board_de_tarefas.entities;
 
 import jakarta.persistence.*;
+import projeto_bootcamp_dio.board_de_tarefas.enums.BoardColumnEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,8 @@ public class Board {
         this.name = name;
     }
 
+
+
     public Long getId() {
         return id;
     }
@@ -44,6 +47,11 @@ public class Board {
     public void addBoardColumn(BoardColumn boardColumn) {
         boardColumnList.add(boardColumn);
         boardColumn.setBoard(this);
+    }
+
+    public BoardColumn getInitialBoardColumn(){
+        return boardColumnList.stream().filter(
+                x -> x.getKind().equals(BoardColumnEnum.INITIAL)).findFirst().orElseThrow();
     }
 
     public void removeBoardColumn(BoardColumn boardColumn) {
