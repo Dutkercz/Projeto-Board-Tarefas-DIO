@@ -105,15 +105,13 @@ public class CardManagerUI {
         if (card != null){
             BoardColumn column = boardColumnService.findById(card.getBoardColumn().getId()+1);
             card.setBoardColumn(column);
-            if (column.getKind() == BoardColumnEnum.CANCEL){
-                System.out.println("Esse card já está finalizado.");
-                return;
+            if (card.getBoardColumn().getKind() == BoardColumnEnum.CANCEL){
+                System.out.println("Esse card já está finalizado. Portanto não pode ser cancelado.");
             }else {
                 cardService.save(card);
                 System.out.printf("Card %s movido para a COLUNA: %s%n",card.getTitle(), card.getBoardColumn().getName());
             }
         }
-
     }
 
     private void blockCard() {
