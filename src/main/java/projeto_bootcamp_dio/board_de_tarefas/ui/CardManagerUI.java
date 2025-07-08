@@ -70,7 +70,7 @@ public class CardManagerUI {
                 case 8 -> showCard();
                 case 9 -> System.out.println(" === Voltando ao menu principal... ===");
                 case 10 -> {
-                    System.out.println("XXX Saindo... XXX");
+                    System.out.println("XXX Saindo... ADEUS, SENTIREI SAUDADES MEU GRANDE AMIGO! XXX");
                     System.exit(0);
                 }
                 default -> System.out.println("Opção inválida, tente novamente.");
@@ -96,6 +96,16 @@ public class CardManagerUI {
     }
 
     private void moveCardToNextColumn() {
+        System.out.print("Informe o ID do CARD que deseja mover: ");
+        long cardID = scanner.nextLong();
+        Card card = cardService.findById(cardID);
+        if (card != null){
+            BoardColumn column = boardColumnService.findById(card.getBoardColumn().getId()+1);
+            card.setBoardColumn(column);
+            cardService.save(card);
+
+            System.out.printf("Card %s movido para a COLUNA: %s%n",card.getTitle(), card.getBoardColumn().getName());
+        }
 
     }
 
@@ -130,7 +140,7 @@ public class CardManagerUI {
                     System.out.printf("%s - %s [%s] %n", x.getId(), x.getName(), x.getKind());
                     if (!x.getCardList().isEmpty()){
                         for (int i = 0; i < x.getCardList().size(); i++) {
-                            System.out.printf(" Card ID %s - %s " ,x.getCardList().get(i).getId(),
+                            System.out.printf(" Card ID %s - %s %n" ,x.getCardList().get(i).getId(),
                                     x.getCardList().get(i).getDescription());
                         }
                         System.out.println();

@@ -1,6 +1,7 @@
 package projeto_bootcamp_dio.board_de_tarefas.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Card;
 import projeto_bootcamp_dio.board_de_tarefas.repositories.CardRepository;
@@ -29,6 +30,7 @@ public class CardService {
         return cardRepository.findAllByBoardColumnId(selectedColumn);
     }
 
+    @Transactional
     public void save(Card card) {
         cardRepository.save(card);
     }
