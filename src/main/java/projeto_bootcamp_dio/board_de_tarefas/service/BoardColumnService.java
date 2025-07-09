@@ -24,4 +24,8 @@ public class BoardColumnService {
         return boardColumnRepository.findById(selectedColumn).orElseThrow(() ->
                 new EntityNotFoundException("!!! Coluna de id " + selectedColumn + " não encontrada !!!"));
     }
+
+    public BoardColumn findByKind(BoardColumnEnum boardColumnEnum) {
+        return boardColumnRepository.findByKind(boardColumnEnum);
+    }
 }

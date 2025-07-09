@@ -8,11 +8,9 @@ import java.util.Scanner;
 @Component
 public class Menu {
 
-    private final BoardService boardService;
     private final BoardManagerUI boardManagerUI;
 
-    public Menu(BoardService boardService, BoardManagerUI boardManagerUI) {
-        this.boardService = boardService;
+    public Menu(BoardManagerUI boardManagerUI) {
         this.boardManagerUI = boardManagerUI;
     }
 
@@ -23,16 +21,14 @@ public class Menu {
 
         do {
             System.out.println("\n== BEM VINDO AO SISTEMA DE BOARDS ==\n");
-            String options = """
+            System.out.print("""
                     Selecione uma das opções do menu
                     1 - CRIAR NOVO BOARD / CREATE NEW BOARD
                     2 - SELECIONAR BOARD / SELECT BOARD
                     3 - EXCLUIR BOARD / DELETE BOARD
                     4 - LISTAR TODOS OS BOARDS / SHOW ALL BOARDS
                     5 - SAIR
-                    >>>\s""";
-
-            System.out.print(options);
+                    >>>\s""");
             select = scanner.nextInt();
             scanner.nextLine();
 

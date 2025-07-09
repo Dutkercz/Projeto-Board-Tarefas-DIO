@@ -40,25 +40,22 @@ public class CardManagerUI {
 
     public void manageCards() {
         System.out.printf("==== Bem VIndo ao Board %s! ==== %n", board.getName());
+        int option = 0;
 
-        String menu = """
-                
-                SELECIONE A OPERAÇÃO DESEJADA
-                1 - Criar um Card
-                2 - Mover um Card
-                3 - Bloquar um Card
-                4 - Desbloquear um Card
-                5 - Cancelar um Card
-                6 - Visualizar Board
-                7 - Visualizar Colunas com Cards
-                8 - Ver Card
-                9 - Voltar ao menu anterior
-                10 - Sair
-                >>\s""";
-        int option;
-
-        do {
-            System.out.print(menu);
+        while (option != 9) {
+            System.out.print("""
+                    SELECIONE A OPERAÇÃO DESEJADA
+                    1 - Criar um Card
+                    2 - Mover um Card
+                    3 - Bloquar um Card
+                    4 - Desbloquear um Card
+                    5 - Cancelar um Card
+                    6 - Visualizar Board
+                    7 - Visualizar Colunas com Cards
+                    8 - Ver Card
+                    9 - Voltar ao menu anterior
+                    10 - Sair
+                    >>\s""");
             option = scanner.nextInt();
             scanner.nextLine();
 
@@ -71,14 +68,15 @@ public class CardManagerUI {
                 case 6 -> showBoard();
                 case 7 -> showColumnWithCard();
                 case 8 -> showCard();
-                case 9 -> System.out.println(" === Voltando ao menu principal... ===");
+                case 9 -> System.out.print(" === Voltando ao menu principal... ===");
                 case 10 -> {
                     System.out.println("XXX Saindo... ADEUS, SENTIREI SAUDADES MEU GRANDE AMIGO! XXX");
                     System.exit(0);
                 }
                 default -> System.out.println("Opção inválida, tente novamente.");
             }
-        } while (option != 9);
+        }
+
     }
 
     private void createCard() {
@@ -93,29 +91,35 @@ public class CardManagerUI {
 
         try {
             cardService.save(card);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             System.out.println(e.getMessage());
         }
-    }
+    } // ok
 
     private void moveCardToNextColumn() {
         System.out.print("Informe o ID do CARD que deseja mover: ");
         long cardID = scanner.nextLong();
         Card card = cardService.findById(cardID);
-        if (card != null){
-            BoardColumn column = boardColumnService.findById(card.getBoardColumn().getId()+1);
+        if (card != null) {
+            BoardColumn column = boardColumnService.findById(card.getBoardColumn().getId() + 1);
             card.setBoardColumn(column);
-            if (card.getBoardColumn().getKind() == BoardColumnEnum.CANCEL){
+            if (card.getBoardColumn().getKind() == BoardColumnEnum.CANCEL) {
                 System.out.println("Esse card já está finalizado. Portanto não pode ser cancelado.");
-            }else {
+            } else {
                 cardService.save(card);
-                System.out.printf("Card %s movido para a COLUNA: %s%n",card.getTitle(), card.getBoardColumn().getName());
+                System.out.printf("Card %s movido para a COLUNA: %s%n", card.getTitle(), card.getBoardColumn().getName());
             }
         }
-    }
+    } // ok
 
     private void blockCard() {
-
+        System.out.println("Selecione o ID do CARD que deseja bloquear ");
+        List<Card> cards = cardService.findAllCardAtivos(board);
+        if (!cards.isEmpty()) {
+            cards.forEach(System.out::println);
+        }else {
+            System.out.println("!!! Não existem Cards elegiveis para bloqueio !!!");
+        }
     }
 
     private void unblockCard() {
@@ -123,8 +127,22 @@ public class CardManagerUI {
     }
 
     private void cancelCard() {
+        System.out.print("Informe o ID do CARD que deseja CANCELAR: ");
+        long cardID = scanner.nextLong();
+        Card card = cardService.findById(cardID);
+        if (card != null) {
+            boardColumn = card.getBoardColumn();
+            if (boardColumn.getKind() != BoardColumnEnum.CANCEL && boardColumn.getKind() != BoardColumnEnum.FINAL) {
+                boardColumn.setKind(BoardColumnEnum.CANCEL);
+                card.setBoardColumn(boardColumn);
+                cardService.save(card);
+                System.out.println("Card Cancelado com sucesso!");
+            } else {
+                System.out.printf("!!! Esse card já se encontra na coluna %s , portanto não pode ser cancelado !!!\n", boardColumn.getKind());
+            }
+        }
 
-    }
+    } // ok
 
     private void showBoard() {
         System.out.println("Board: " + board.getName() + " ID: " + board.getId());
@@ -133,24 +151,24 @@ public class CardManagerUI {
             int totalCards = cardService.countCardByColumn(x.getId());
             System.out.printf("   Coluna %s , do tipo %s - tem um total de %s cards %n", x.getName(), x.getKind(), totalCards);
         });
-    }
+    } // ok
 
     private void showColumnWithCard() {
         board = boardService.findBoard(board.getId());
-        System.out.printf("Escolha uma coluna do Board %s %n" , board.getName());
+        System.out.printf("Escolha uma coluna do Board %s %n", board.getName());
         List<Long> columnsIds = board.getBoardColumnList().stream().map(BoardColumn::getId).toList();
         long selectedColumnID = -1L;
 
         while (!columnsIds.contains(selectedColumnID)) {//roda até encontrar um ID que esteja na listade columnsIds
             board.getBoardColumnList().forEach(x -> {
-                    System.out.printf("%s - %s [%s] %n", x.getId(), x.getName(), x.getKind());
-                    if (!x.getCardList().isEmpty()){
-                        for (int i = 0; i < x.getCardList().size(); i++) {
-                            System.out.printf(" Card ID %s - %s %n" ,x.getCardList().get(i).getId(),
-                                    x.getCardList().get(i).getDescription());
-                        }
-                        System.out.println();
+                System.out.printf("%s - %s [%s] %n", x.getId(), x.getName(), x.getKind());
+                if (!x.getCardList().isEmpty()) {
+                    for (int i = 0; i < x.getCardList().size(); i++) {
+                        System.out.printf(" Card ID %s - %s %n", x.getCardList().get(i).getId(),
+                                x.getCardList().get(i).getDescription());
                     }
+                    System.out.println();
+                }
             });
             selectedColumnID = scanner.nextLong();
         }
@@ -160,11 +178,11 @@ public class CardManagerUI {
             boardColumn.getCardList().forEach(x ->
                     System.out.printf("Card %s - %s.\nDescrição: %s%n", x.getId(), x.getTitle(), x.getDescription()));
 
-        }catch (EntityNotFoundException e){
+        } catch (EntityNotFoundException e) {
             System.out.println(e.getMessage());
         }
 
-    }
+    } // ok
 
     private void showCard() {
         if (boardColumn == null) {
@@ -176,7 +194,7 @@ public class CardManagerUI {
         if (cardsList.isEmpty()) {
             System.out.printf("Não há Cards na coluna %s [tipo - %s]%n",
                     boardColumn.getName(), boardColumn.getKind());
-        }else {
+        } else {
             Card card = new Card();
             List<Long> cardListIds = cardsList.stream().map(Card::getId).toList();
             long selectedCardId = -1L;
@@ -210,6 +228,6 @@ public class CardManagerUI {
             System.out.printf("Número total de bloqueios: %s%n",
                     blockService.countTotalBlocks(card.getId()));
         }
-    }
+    } // ok
 
 }

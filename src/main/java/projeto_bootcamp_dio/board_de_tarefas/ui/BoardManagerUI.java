@@ -28,26 +28,24 @@ public class BoardManagerUI {
 
 
     public void createBoard() {
-
         Board board = new Board();
-        System.out.println("CRIAR BOARD");
+        System.out.println("\nCRIAR BOARD");
         System.out.print("Digite o nome do Board: ");
         String boardName = scanner.nextLine();
-        board.setId(null);
         board.setName(boardName);
+        board.setId(null);
         board = boardService.insert(board);
 
         System.out.print("""
-                
                 Seu BOARD tera colunas além das 3 padrões?
                 Se SIM digite a quantidade
                 Se NÃO digite 0
                 >>\s""");
         int additionalColumns = scanner.nextInt();
-
+        scanner.nextLine();
         List<BoardColumn> boardColumnList = new ArrayList<>();
 
-        scanner.nextLine();
+
         System.out.print("Informe o nome da COLUNA INICIAL do Board: ");
         String initialColumnName = scanner.nextLine();
 
@@ -91,6 +89,7 @@ public class BoardManagerUI {
         Board board;
         System.out.println("Informe o ID do Board que deseja selecionar");
         Long boardID = scanner.nextLong();
+        scanner.nextLine();
         try {
             board = boardService.findBoard(boardID);
             cardManagerUI.setBoard(board);
@@ -115,8 +114,6 @@ public class BoardManagerUI {
         System.out.print("\nDigite o ID do board que deseja deletar: ");
         long boardId = scanner.nextLong();
         Board board;
-
-
         try {
             board = boardService.findBoard(boardId);
         } catch (EntityNotFoundException e) {
