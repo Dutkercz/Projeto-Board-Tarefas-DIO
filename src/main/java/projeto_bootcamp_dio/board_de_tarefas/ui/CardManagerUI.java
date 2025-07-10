@@ -2,6 +2,7 @@ package projeto_bootcamp_dio.board_de_tarefas.ui;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Component;
+import projeto_bootcamp_dio.board_de_tarefas.entities.Block;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Board;
 import projeto_bootcamp_dio.board_de_tarefas.entities.BoardColumn;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Card;
@@ -12,6 +13,7 @@ import projeto_bootcamp_dio.board_de_tarefas.service.BoardService;
 import projeto_bootcamp_dio.board_de_tarefas.service.CardService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -47,7 +49,7 @@ public class CardManagerUI {
                     SELECIONE A OPERAÇÃO DESEJADA
                     1 - Criar um Card
                     2 - Mover um Card
-                    3 - Bloquar um Card
+                    3 - Bloquear um Card
                     4 - Desbloquear um Card
                     5 - Cancelar um Card
                     6 - Visualizar Board
@@ -113,10 +115,31 @@ public class CardManagerUI {
     } // ok
 
     private void blockCard() {
-        System.out.println("Selecione o ID do CARD que deseja bloquear ");
         List<Card> cards = cardService.findAllCardAtivos(board);
+        long selectedCardId;
         if (!cards.isEmpty()) {
-            cards.forEach(System.out::println);
+            List<Long> cardsIds = cards.stream().map(Card::getId).toList();
+            do {
+                System.out.println("Escolha o ID do card que deseja bloquear\nOu 0 para cancelar!");
+                cards.forEach(x -> System.out.printf("ID %s - %s%n", x.getId(), x.getTitle()));
+                System.out.print(">> ");
+                selectedCardId = scanner.nextLong();
+                scanner.nextLine();
+                if (selectedCardId == 0){
+                    return;
+                }
+            }while (!cardsIds.contains(selectedCardId));
+
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            Card card = cardService.findById(selectedCardId);
+            System.out.println("Informe o motivo de bloqueio do card: " + card.getTitle());
+            String blockReason = scanner.nextLine();
+            Block block = blockService.blockCard(card, blockReason); // gera um novo Bloqueio
+            card.addBlock(block);
+            cardService.save(card);
+            System.out.println("Resumo do Bloqueio");
+            System.out.printf("Card: %s - Bloqueado em: %s %nMotivo do bloqueio %s -%n",
+                    card.getTitle(), block.getBlockedAt().format(dtf), block.getBlockReason());
         }else {
             System.out.println("!!! Não existem Cards elegiveis para bloqueio !!!");
         }
