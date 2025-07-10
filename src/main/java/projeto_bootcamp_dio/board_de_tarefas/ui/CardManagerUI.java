@@ -14,8 +14,10 @@ import projeto_bootcamp_dio.board_de_tarefas.service.CardService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 @Component
 public class CardManagerUI {
@@ -146,7 +148,17 @@ public class CardManagerUI {
     }
 
     private void unblockCard() {
+        List<Card> cardsBlocked = cardService.findAllCardAtivos(board).stream().
+                filter(x -> !x.getBlockList().isEmpty()).toList();
 
+        List<Block> allBlocks = cardsBlocked.stream()
+                .flatMap(card -> card.getBlockList().stream())
+                .toList();
+
+        long selectedCardId;
+        if (!cardsBlocked.isEmpty()) {
+            List<Long> cardsIds = cardsBlocked.stream().map(Card::getId).toList();
+        }
     }
 
     private void cancelCard() {
