@@ -1,5 +1,6 @@
 package projeto_bootcamp_dio.board_de_tarefas.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Block;
@@ -29,4 +30,18 @@ public class BlockService {
         block.setBlockedAt(LocalDateTime.now());
         return block;
     }
+
+    @Transactional
+    public Block unblockCard(Block block, String unblockReason) {
+        block.setUnblockAt(LocalDateTime.now());
+        block.setUnblockReason(unblockReason);
+        return blockRepository.save(block);
+    }
+
+    public Block findById(Long id) {
+        return blockRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("!!! Bloqueio não encontrado !!!"));
+    }
+
+
 }

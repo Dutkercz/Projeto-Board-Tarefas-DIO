@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Board;
+import projeto_bootcamp_dio.board_de_tarefas.entities.BoardColumn;
 import projeto_bootcamp_dio.board_de_tarefas.entities.Card;
 import projeto_bootcamp_dio.board_de_tarefas.enums.BoardColumnEnum;
 import projeto_bootcamp_dio.board_de_tarefas.repositories.CardRepository;
@@ -44,5 +45,19 @@ public class CardService {
                 .filter(x -> x.getBoardColumn().getKind() != BoardColumnEnum.CANCEL)
                 .filter(x -> x.getBoardColumn().getKind() != BoardColumnEnum.FINAL)
                 .toList();
+    }
+
+    public List<Card> findAllWithBlock() {
+        return cardRepository.findAll()
+                .stream()
+                .filter(x -> x.getBlockList().stream()
+                        .anyMatch(y -> y.getBlockReason() != null
+                                && y.getUnblockReason() == null)).toList();
+    }
+
+    @Transactional
+    public void alterBoardColumn(Card card, BoardColumn boardColumn) {
+        card.setBoardColumn(boardColumn);
+        cardRepository.save(card);
     }
 }

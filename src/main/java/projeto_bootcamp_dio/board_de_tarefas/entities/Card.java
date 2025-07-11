@@ -3,6 +3,7 @@ package projeto_bootcamp_dio.board_de_tarefas.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -20,7 +21,7 @@ public class Card {
     private BoardColumn boardColumn;
 
     @OneToMany(mappedBy = "card", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<Block> blockList;
+    private List<Block> blockList = new ArrayList<>();
 
     public Card() {
     }
